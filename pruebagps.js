@@ -7,6 +7,7 @@ function getLocation(controlId) {
                 " Longitude: " + position.coords.longitude
             );
         });
+        console.error("Geolocation supported this browser.");
     } else {
         console.error("Geolocation is not supported by this browser.");
     }
