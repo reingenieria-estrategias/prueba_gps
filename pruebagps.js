@@ -3,8 +3,8 @@ function getLocation(controlId) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position){
             loader.getDOMAbstractionLayer().setControlValueById(controlId,
-                position.coords.latitude +
-                "," + position.coords.longitude
+               "Latitude: " + position.coords.latitude +
+               " Longitude: " + position.coords.longitude
             );
         });
     } else {
