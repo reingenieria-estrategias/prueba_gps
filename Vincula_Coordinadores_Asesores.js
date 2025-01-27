@@ -21,7 +21,7 @@ async function loadAsesores(selectedCoordinador) {
   const data = await fetchSheetData(sheetUrl);
 
   // Filtra asesores vinculados al coordinador seleccionado y en estado "ALTA"
-  const asesores = data.filter(row => row['NOMBRE COORDINADOR'] === selectedCoordinador && row['ESTADO ASESOR'] === 'ALTA');
+  const asesores = data.filter(row => row['NOMBRE COMPLETO COORDINADOR'] === selectedCoordinador && row['ESTADO ASESOR'] === 'ALTA');
 
   // Referencia al campo de asesores
   const asesoresField = document.querySelector([id="${asesoresFieldId}"]);
@@ -31,8 +31,8 @@ async function loadAsesores(selectedCoordinador) {
 
   // Agrega dinámicamente las nuevas opciones desde Google Sheets
   asesores.forEach(row => {
-    const optionValue = row['NOMBRE ASESOR'];
-    const optionText = row['NOMBRE ASESOR'];
+    const optionValue = row['NOMBRE COMPLETO ASESOR'];
+    const optionText = row['NOMBRE COMPLETO ASESOR'];
 
     const option = document.createElement('option');
     option.value = optionValue;
@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Agrega el evento para cuando el coordinador sea seleccionado
   coordinadoresField.addEventListener('change', (event) => {
+    console.log('Coordinador seleccionado:', event.target.value); // Verifica si la selección está funcionando
     loadAsesores(event.target.value);
   });
 });
