@@ -6,21 +6,18 @@ async function getCoordinators(controlId) {
     try {
         console.log('Cargando datos desde:', SHEET_URL);
 
-        // Obtiene los datos de Google Sheets como texto
+        // Obtiene los datos de Google Sheets
         const response = await fetch(SHEET_URL);
         const csvText = await response.text();
 
         console.log('Datos CSV recibidos:', csvText);
 
-        // Convierte el CSV en un arreglo de filas
+        // Convierte el CSV en un arreglo
         const rows = csvText.split('\n').map(row => row.split(','));
-
         console.log('Filas procesadas:', rows);
 
         // Encuentra la columna "NOMBRE COMPLETO COORDINADOR"
         const header = rows[0].map(h => h.trim());
-        console.log('Encabezados detectados:', header);
-
         let nameIndex = header.findIndex(col => col.toLowerCase().includes('nombre completo coordinador'));
 
         if (nameIndex === -1) {
@@ -38,15 +35,16 @@ async function getCoordinators(controlId) {
             return;
         }
 
-        // Convierte la lista en un formato compatible con 123FormBuilder (separado por comas)
+        // Convierte la lista en un formato compatible con 123FormBuilder
         const coordinatorsList = coordinators.join(',');
 
         console.log('Lista formateada para 123FormBuilder:', coordinatorsList);
 
-        // Asigna la lista de coordinadores al campo usando el mismo método que la ubicación
-        loader.getDOMAbstractionLayer().setControlValueById(controlId, coordinatorsList);
-
-        console.log('Coordinadores insertados correctamente en el formulario.');
+        // Esperar unos segundos antes de insertar los datos
+        setTimeout(() => {
+            loader.getDOMAbstractionLayer().setControlValueById(controlId, coordinatorsList);
+            console.log('Coordinadores insertados correctamente en el formulario.');
+        }, 3000); // Espera 3 segundos
 
     } catch (error) {
         console.error('Error al cargar los datos de Google Sheets:', error);
