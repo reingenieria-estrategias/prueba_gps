@@ -1,44 +1,55 @@
-// URL público de Google Sheets con el ID del archivo y hoja específica
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/1GyMbb5egTrbA20SUBBbUTZWvmPlhr3eaneQC0jqnvTA/gviz/tq?tqx=out:csv&sheet=COORDINADORES";
+// URL pública de la hoja de cálculo en formato CSV
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQMUFG3C4APJuBqY34YEaFHdzEPu0ISJJXN36si4w0-GvP2Hb35emEQCY838kpa71HW6L6ySSgyN-56/pub?gid=0&single=true&output=csv';
 
-// ID del campo dinámico en FormBuilder
-const COORDINADOR_FIELD_ID = "114657503"; // Este es el control ID del campo en FormBuilder
+// ID del campo desplegable en el formulario de 123FormBuilder
+const FIELD_ID = '114657503';
 
-// Función para cargar los datos desde Google Sheets
-async function cargarCoordinadores() {
-  try {
-    // Solicitud al archivo CSV de Google Sheets
-    const response = await fetch(SHEET_URL);
-    const csvText = await response.text();
+// Función para cargar los datos de la hoja y poblar el campo desplegable
+async function populateCoordinatorDropdown() {
+    try {
+        // Obtiene los datos de Google Sheets como texto
+        const response = await fetch(SHEET_URL);
+        const csvText = await response.text();
 
-    // Convertir el CSV en líneas
-    const lines = csvText.split("\n");
+        // Convierte el CSV en un arreglo de filas
+        const rows = csvText.split('\n').map(row => row.split(','));
 
-    // Referencia al campo dinámico de FormBuilder usando su ID
-    const coordinadorField = document.querySelector([id='control:${COORDINADOR_FIELD_ID}']);
+        // Encuentra el índice de la columna "NOMBRE COMPLETO COORDINADOR"
+        const header = rows[0].map(h => h.trim()); // Elimina espacios en blanco
+        const nameIndex = header.indexOf('NOMBRE COMPLETO COORDINADOR');
 
-    // Validar que el campo existe
-    if (!coordinadorField) {
-      console.error(Campo con Control ID: ${COORDINADOR_FIELD_ID} no encontrado.);
-      return;
+        if (nameIndex === -1) {
+            console.error('No se encontró la columna NOMBRE COMPLETO COORDINADOR.');
+            return;
+        }
+
+        // Extrae los nombres de los coordinadores, eliminando espacios y filas vacías
+        const coordinators = rows.slice(1).map(row => row[nameIndex]?.trim()).filter(name => name);
+
+        // Referencia al campo desplegable en 123FormBuilder
+        const dropdown = loader.getDOMAbstractionLayer().getControlById(FIELD_ID);
+
+        if (!dropdown) {
+            console.error('No se encontró el campo en el formulario.');
+            return;
+        }
+
+        // Limpia las opciones actuales
+        dropdown.innerHTML = '';
+
+        // Agrega las opciones al desplegable
+        coordinators.forEach(coordinator => {
+            const option = document.createElement('option');
+            option.value = coordinator;
+            option.textContent = coordinator;
+            dropdown.appendChild(option);
+        });
+
+        console.log('Lista de coordinadores actualizada correctamente.');
+    } catch (error) {
+        console.error('Error al cargar los datos de Google Sheets:', error);
     }
-
-    // Iterar sobre las líneas del archivo CSV (saltando la primera línea: encabezados)
-    lines.slice(1).forEach((line) => {
-      const [nombreCompleto] = line.split(","); // Extraer la primera columna (Nombre Completo)
-
-      if (nombreCompleto) {
-        const option = document.createElement("option");
-        option.value = controlId:${COORDINADOR_FIELD_ID}; // Valor exacto que necesita FormBuilder
-        option.textContent = nombreCompleto.trim(); // Nombre visible en el dropdown
-        coordinadorField.appendChild(option);
-      }
-    });
-  } catch (error) {
-    console.error("Error al cargar los datos desde Google Sheets:", error);
-  }
 }
 
-// Ejecutar la función cuando la página cargue
-document.addEventListener("DOMContentLoaded", cargarCoordinadores);
+// Ejecuta la función cuando se carga el formulario
+document.addEventListener('DOMContentLoaded', populateCoordinatorDropdown);
