@@ -40,10 +40,14 @@ async function getCoordinators(controlId) {
 
         console.log('Lista formateada para 123FormBuilder:', coordinatorsList);
 
-        // Esperar unos segundos antes de insertar los datos
+        // Usa la API interna de 123FormBuilder
         setTimeout(() => {
-            loader.getDOMAbstractionLayer().setControlValueById(controlId, coordinatorsList);
-            console.log('Coordinadores insertados correctamente en el formulario.');
+            if (typeof loader !== 'undefined' && loader.getDOMAbstractionLayer) {
+                loader.getDOMAbstractionLayer().setControlValueById(controlId, coordinatorsList);
+                console.log('Coordinadores insertados correctamente en el formulario.');
+            } else {
+                console.error('Error: loader.getDOMAbstractionLayer no está disponible.');
+            }
         }, 3000); // Espera 3 segundos
 
     } catch (error) {
