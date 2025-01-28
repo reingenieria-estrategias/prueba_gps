@@ -37,8 +37,8 @@ async function populateCoordinatorDropdown() {
 
         console.log('Lista de coordinadores extraída:', coordinators); // Depurar lista de nombres
 
-        // Referencia al campo desplegable en 123FormBuilder
-        const dropdown = loader.getDOMAbstractionLayer().getControlById(FIELD_ID);
+        // Buscar el campo desplegable directamente en el DOM
+        const dropdown = document.querySelector(select[name="widget${FIELD_ID}"]);
 
         if (!dropdown) {
             console.error('No se encontró el campo en el formulario.');
