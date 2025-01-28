@@ -13,28 +13,29 @@ async function populateCoordinatorDropdown() {
         const response = await fetch(SHEET_URL);
         const csvText = await response.text();
 
-        console.log('Datos CSV recibidos:', csvText); // Log para verificar los datos
+        console.log('Datos CSV recibidos:', csvText); // Verificar que se reciba contenido
 
-        // Convierte el CSV en un arreglo de filas
+        // Convierte el CSV en un arreglo de filas correctamente
         const rows = csvText.split('\n').map(row => row.split(','));
 
-        console.log('Filas procesadas:', rows); // Log para verificar la conversión a matriz
+        console.log('Filas procesadas:', rows); // Verificar cómo se ve la tabla en el código
 
         // Encuentra la columna "NOMBRE COMPLETO COORDINADOR"
-        const header = rows[0].map(h => h.trim()); // Elimina espacios en blanco
-        console.log('Encabezados detectados:', header); // Log para ver los nombres de las columnas
+        const header = rows[0].map(h => h.trim());
+        console.log('Encabezados detectados:', header);
 
-        const nameIndex = header.indexOf('NOMBRE COMPLETO COORDINADOR');
+        // Buscar la columna correcta
+        let nameIndex = header.findIndex(col => col.toLowerCase().includes('nombre completo coordinador'));
 
         if (nameIndex === -1) {
             console.error('No se encontró la columna NOMBRE COMPLETO COORDINADOR.');
             return;
         }
 
-        // Extrae los nombres de los coordinadores, eliminando espacios y filas vacías
+        // Extrae los nombres de los coordinadores
         const coordinators = rows.slice(1).map(row => row[nameIndex]?.trim()).filter(name => name);
 
-        console.log('Lista de coordinadores extraída:', coordinators); // Verifica la lista final
+        console.log('Lista de coordinadores extraída:', coordinators); // Depurar lista de nombres
 
         // Referencia al campo desplegable en 123FormBuilder
         const dropdown = loader.getDOMAbstractionLayer().getControlById(FIELD_ID);
