@@ -1,11 +1,8 @@
-// URL pública de la hoja de cálculo en formato CSV
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQMUFG3C4APJuBqY34YEaFHdzEPu0ISJJXN36si4w0-GvP2Hb35emEQCY838kpa71HW6L6ySSgyN-56/pub?gid=0&single=true&output=csv';
+getCoordinators('114657503'); // ID del campo Coordinador
 
-// ID del campo desplegable en el formulario de 123FormBuilder
-const FIELD_ID = '114657503';
+async function getCoordinators(controlId) {
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQMUFG3C4APJuBqY34YEaFHdzEPu0ISJJXN36si4w0-GvP2Hb35emEQCY838kpa71HW6L6ySSgyN-56/pub?gid=0&single=true&output=csv';
 
-// Función para cargar los datos de la hoja y poblar el campo desplegable
-async function populateCoordinatorDropdown() {
     try {
         console.log('Cargando datos desde:', SHEET_URL);
 
@@ -13,18 +10,17 @@ async function populateCoordinatorDropdown() {
         const response = await fetch(SHEET_URL);
         const csvText = await response.text();
 
-        console.log('Datos CSV recibidos:', csvText); // Verificar que se reciba contenido
+        console.log('Datos CSV recibidos:', csvText);
 
-        // Convierte el CSV en un arreglo de filas correctamente
+        // Convierte el CSV en un arreglo de filas
         const rows = csvText.split('\n').map(row => row.split(','));
 
-        console.log('Filas procesadas:', rows); // Verificar cómo se ve la tabla en el código
+        console.log('Filas procesadas:', rows);
 
         // Encuentra la columna "NOMBRE COMPLETO COORDINADOR"
         const header = rows[0].map(h => h.trim());
         console.log('Encabezados detectados:', header);
 
-        // Buscar la columna correcta
         let nameIndex = header.findIndex(col => col.toLowerCase().includes('nombre completo coordinador'));
 
         if (nameIndex === -1) {
@@ -35,38 +31,24 @@ async function populateCoordinatorDropdown() {
         // Extrae los nombres de los coordinadores
         const coordinators = rows.slice(1).map(row => row[nameIndex]?.trim()).filter(name => name);
 
-        console.log('Lista de coordinadores extraída:', coordinators); // Depurar lista de nombres
+        console.log('Lista de coordinadores extraída:', coordinators);
 
-        // Buscar el campo desplegable directamente en el DOM
-        const dropdown = document.querySelector(select[name="widget${FIELD_ID}"]);
-
-        if (!dropdown) {
-            console.error('No se encontró el campo en el formulario.');
+        if (coordinators.length === 0) {
+            console.error('No se encontraron coordinadores en la hoja.');
             return;
         }
 
-        // Limpia las opciones actuales
-        dropdown.innerHTML = '';
+        // Convierte la lista en un formato compatible con 123FormBuilder (separado por comas)
+        const coordinatorsList = coordinators.join(',');
 
-        // Agrega la opción "Seleccione una Opción" como primera opción
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Seleccione una Opción';
-        dropdown.appendChild(defaultOption);
+        console.log('Lista formateada para 123FormBuilder:', coordinatorsList);
 
-        // Agrega las opciones al desplegable
-        coordinators.forEach(coordinator => {
-            const option = document.createElement('option');
-            option.value = coordinator;
-            option.textContent = coordinator;
-            dropdown.appendChild(option);
-        });
+        // Asigna la lista de coordinadores al campo usando el mismo método que la ubicación
+        loader.getDOMAbstractionLayer().setControlValueById(controlId, coordinatorsList);
 
-        console.log('Lista de coordinadores actualizada correctamente en el formulario.');
+        console.log('Coordinadores insertados correctamente en el formulario.');
+
     } catch (error) {
         console.error('Error al cargar los datos de Google Sheets:', error);
     }
 }
-
-// Ejecuta la función cuando se carga el formulario
-document.addEventListener('DOMContentLoaded', populateCoordinatorDropdown);
