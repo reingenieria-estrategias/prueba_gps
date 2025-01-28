@@ -1,21 +1,21 @@
-// URL público del Google Sheets
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/1AbcDXYZ1234567890/gviz/tq?tqx=out:json&sheet=COORDINADORES";
+// URL público de Google Sheets con el ID del archivo y hoja específica
+const SHEET_URL =
+  "https://docs.google.com/spreadsheets/d/1GyMbb5egTrbA20SUBBbUTZWvmPlhr3eaneQC0jqnvTA/gviz/tq?tqx=out:csv&sheet=COORDINADORES";
 
 // ID del campo dinámico en FormBuilder
-const COORDINADOR_FIELD_ID = "114657503"; // Control ID exacto del campo "Coordinador"
+const COORDINADOR_FIELD_ID = "114657503"; // Este es el control ID del campo en FormBuilder
 
 // Función para cargar los datos desde Google Sheets
 async function cargarCoordinadores() {
   try {
-    // Hacer la solicitud al enlace de Google Sheets
+    // Solicitud al archivo CSV de Google Sheets
     const response = await fetch(SHEET_URL);
-    const text = await response.text();
+    const csvText = await response.text();
 
-    // Limpiar el JSON recibido desde Google Sheets (elimina los caracteres adicionales)
-    const json = JSON.parse(text.substring(47).slice(0, -2));
-    const rows = json.table.rows;
+    // Convertir el CSV en líneas
+    const lines = csvText.split("\n");
 
-    // Seleccionar el campo dinámico de FormBuilder usando el Control ID
+    // Referencia al campo dinámico de FormBuilder usando su ID
     const coordinadorField = document.querySelector([id='control:${COORDINADOR_FIELD_ID}']);
 
     // Validar que el campo existe
@@ -24,13 +24,14 @@ async function cargarCoordinadores() {
       return;
     }
 
-    // Iterar sobre las filas y agregar las opciones al campo dinámico
-    rows.forEach(row => {
-      const nombreCompleto = row.c[0]?.v; // Toma el valor de la columna "NOMBRECOMPLETO COORDINADOR"
+    // Iterar sobre las líneas del archivo CSV (saltando la primera línea: encabezados)
+    lines.slice(1).forEach((line) => {
+      const [nombreCompleto] = line.split(","); // Extraer la primera columna (Nombre Completo)
+
       if (nombreCompleto) {
         const option = document.createElement("option");
-        option.value = controlId:${COORDINADOR_FIELD_ID}; // Valor dinámico en FormBuilder
-        option.textContent = nombreCompleto; // Texto visible en el desplegable
+        option.value = controlId:${COORDINADOR_FIELD_ID}; // Valor exacto que necesita FormBuilder
+        option.textContent = nombreCompleto.trim(); // Nombre visible en el dropdown
         coordinadorField.appendChild(option);
       }
     });
