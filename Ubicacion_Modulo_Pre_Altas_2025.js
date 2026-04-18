@@ -13,14 +13,24 @@ function getLocation(controlId) {
 }
 
 
-// ===== PRUEBA DE ESCRITURA EN IMPUESTOS =====
+// ===== CALCULO DE IMPUESTOS =====
 setInterval(function() {
 
-  try {
-    loader.getDOMAbstractionLayer().setControlValueById(
-      '121006750',
-      '9999'
-    );
-  } catch(e) {}
+  var api = loader.getDOMAbstractionLayer();
 
-}, 2000);
+  var lote = parseFloat(api.getControlValueById('119659971')) || 0;
+  var mts = parseFloat(api.getControlValueById('119667582')) || 0;
+  var precioMt2 = parseFloat(api.getControlValueById('119667584')) || 0;
+  var costo = parseFloat(api.getControlValueById('119791015')) || 0;
+
+  var valor = lote + (mts * precioMt2) + costo;
+
+  if (!valor) return;
+
+  var resultado = (valor <= 641000)
+    ? valor * 0.015
+    : valor * 0.03;
+
+  api.setControlValueById('121006750', resultado.toFixed(2));
+
+}, 1000);
