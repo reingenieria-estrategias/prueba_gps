@@ -4,7 +4,8 @@ getLocation('119652394');
 function getLocation(controlId) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position){
-            loader.getDOMAbstractionLayer().setControlValueById(controlId,
+            loader.getDOMAbstractionLayer().setControlValueById(
+                controlId,
                 position.coords.latitude + "," + position.coords.longitude
             );
         });
@@ -14,16 +15,19 @@ function getLocation(controlId) {
 }
 
 
-// ===== CALCULO DE IMPUESTOS (COMPATIBLE CON CAMPO FORMULA) =====
+// ===== CALCULO DE IMPUESTOS (FORZADO DESDE DOM) =====
 setInterval(function() {
 
-  var valorRaw = form.getFieldValue('field_119667588');
+  var campoValor = document.querySelector('[name="field_119667588"]');
+  var campoImpuesto = document.querySelector('[name="field_121006750"]');
 
+  if (!campoValor || !campoImpuesto) return;
+
+  var valorRaw = campoValor.value;
   if (!valorRaw) return;
 
-  // Limpia posibles símbolos ($, comas, etc.)
   var valor = parseFloat(
-    valorRaw.toString().replace(/[^0-9.-]+/g,"")
+    valorRaw.toString().replace(/[^0-9.-]+/g, "")
   );
 
   if (isNaN(valor)) return;
@@ -36,6 +40,6 @@ setInterval(function() {
     resultado = valor * 0.03;
   }
 
-  form.setFieldValue('field_121006750', resultado.toFixed(2));
+  campoImpuesto.value = resultado.toFixed(2);
 
 }, 1000);
