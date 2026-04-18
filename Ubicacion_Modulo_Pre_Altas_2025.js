@@ -13,31 +13,31 @@ function getLocation(controlId) {
 }
 
 
-// ===== CALCULO DE IMPUESTOS (FORZADO GLOBAL) =====
+// ===== CALCULO DE IMPUESTOS (USANDO API INTERNA) =====
 setInterval(function() {
 
-  var texto = document.body.innerText;
+  try {
 
-  var match = texto.match(/[\d,]+(\.\d+)?/g);
-  if (!match) return;
+    var valorRaw = loader.getDOMAbstractionLayer()
+      .getControlValueById('119667588');
 
-  // toma el número más grande visible (tu valor total)
-  var valor = Math.max.apply(null, match.map(function(n){
-    return parseFloat(n.replace(/,/g,"")) || 0;
-  }));
+    if (!valorRaw) return;
 
-  if (!valor) return;
+    var valor = parseFloat(
+      valorRaw.toString().replace(/[^0-9.-]+/g,"")
+    );
 
-  var resultado = (valor <= 641000)
-    ? valor * 0.015
-    : valor * 0.03;
+    if (isNaN(valor)) return;
 
-  var inputs = document.querySelectorAll("input");
+    var resultado = (valor <= 641000)
+      ? valor * 0.015
+      : valor * 0.03;
 
-  inputs.forEach(function(input){
-    if (input.name && input.name.includes("121006750")) {
-      input.value = resultado.toFixed(2);
-    }
-  });
+    loader.getDOMAbstractionLayer().setControlValueById(
+      '121006750',
+      resultado.toFixed(2)
+    );
+
+  } catch(e) {}
 
 }, 1000);
