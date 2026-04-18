@@ -13,29 +13,31 @@ function getLocation(controlId) {
 }
 
 
-// ===== CALCULO DE IMPUESTOS (LECTURA REAL DE FORMULA) =====
+// ===== CALCULO DE IMPUESTOS (FORZADO GLOBAL) =====
 setInterval(function() {
 
-  var campoValor = document.querySelector('[name="field_119667588"]');
-  var campoImpuesto = document.querySelector('[name="field_121006750"]');
+  var texto = document.body.innerText;
 
-  if (!campoValor || !campoImpuesto) return;
+  var match = texto.match(/[\d,]+(\.\d+)?/g);
+  if (!match) return;
 
-  // 🔥 clave: intenta leer value o texto visible
-  var valorRaw = campoValor.value || campoValor.innerText || campoValor.textContent;
+  // toma el número más grande visible (tu valor total)
+  var valor = Math.max.apply(null, match.map(function(n){
+    return parseFloat(n.replace(/,/g,"")) || 0;
+  }));
 
-  if (!valorRaw) return;
-
-  var valor = parseFloat(
-    valorRaw.toString().replace(/[^0-9.-]+/g,"")
-  );
-
-  if (isNaN(valor)) return;
+  if (!valor) return;
 
   var resultado = (valor <= 641000)
     ? valor * 0.015
     : valor * 0.03;
 
-  campoImpuesto.value = resultado.toFixed(2);
+  var inputs = document.querySelectorAll("input");
+
+  inputs.forEach(function(input){
+    if (input.name && input.name.includes("121006750")) {
+      input.value = resultado.toFixed(2);
+    }
+  });
 
 }, 1000);
