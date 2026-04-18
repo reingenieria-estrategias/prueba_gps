@@ -14,10 +14,20 @@ function getLocation(controlId) {
 }
 
 
-// ===== CALCULO DE IMPUESTOS =====
-form.on('change', function(field) {
+// ===== CALCULO DE IMPUESTOS (COMPATIBLE CON CAMPO FORMULA) =====
+setInterval(function() {
 
-  var valor = parseFloat(form.getFieldValue('field_119667588')) || 0;
+  var valorRaw = form.getFieldValue('field_119667588');
+
+  if (!valorRaw) return;
+
+  // Limpia posibles símbolos ($, comas, etc.)
+  var valor = parseFloat(
+    valorRaw.toString().replace(/[^0-9.-]+/g,"")
+  );
+
+  if (isNaN(valor)) return;
+
   var resultado;
 
   if (valor <= 641000) {
@@ -28,4 +38,4 @@ form.on('change', function(field) {
 
   form.setFieldValue('field_121006750', resultado.toFixed(2));
 
-});
+}, 1000);
