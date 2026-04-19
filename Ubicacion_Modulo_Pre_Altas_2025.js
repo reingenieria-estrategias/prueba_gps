@@ -1,3 +1,19 @@
+// ===== GEOLOCALIZACION =====
+getLocation('119535478');
+
+function getLocation(controlId) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position){
+            loader.getDOMAbstractionLayer().setControlValueById(
+                controlId,
+                position.coords.latitude + "," + position.coords.longitude
+            );
+        });
+    }
+}
+
+
+// ===== IMPUESTOS FORMATEADO (FORZADO) =====
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
@@ -19,12 +35,12 @@ setInterval(function() {
     ? valor * 0.015
     : valor * 0.03;
 
-  // 🔥 FORMATO AQUÍ
   var formateado = resultado.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
 
-  api.setControlValueById('121009493', formateado);
+  // 🔥 CLAVE: forzar como string
+  api.setControlValueById('121009493', formateado + '');
 
 }, 1000);
