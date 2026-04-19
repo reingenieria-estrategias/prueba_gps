@@ -1,5 +1,6 @@
+
 // ===== GEOLOCALIZACION =====
-getLocation('119652394');
+getLocation('119535478');
 
 function getLocation(controlId) {
     if (navigator.geolocation) {
@@ -13,15 +14,20 @@ function getLocation(controlId) {
 }
 
 
-// ===== CALCULO DE IMPUESTOS =====
+// ===== CALCULO DE IMPUESTOS FORMATEADO =====
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
 
-  var lote = parseFloat(api.getControlValueById('119659971')) || 0;
-  var mts = parseFloat(api.getControlValueById('119667582')) || 0;
-  var precioMt2 = parseFloat(api.getControlValueById('119667584')) || 0;
-  var costo = parseFloat(api.getControlValueById('119791015')) || 0;
+  // 🔴 limpiar por si algún campo tiene comas
+  function limpiar(valor) {
+    return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
+  }
+
+  var lote = limpiar(api.getControlValueById('119659971'));
+  var mts = limpiar(api.getControlValueById('119667582'));
+  var precioMt2 = limpiar(api.getControlValueById('119667584'));
+  var costo = limpiar(api.getControlValueById('119791015'));
 
   var valor = lote + (mts * precioMt2) + costo;
 
@@ -31,6 +37,12 @@ setInterval(function() {
     ? valor * 0.015
     : valor * 0.03;
 
-  api.setControlValueById('121006750', resultado.toFixed(2));
+  // 🔥 FORMATEAR AQUÍ
+  var formateado = resultado.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  api.setControlValueById('121006750', formateado);
 
 }, 1000);
