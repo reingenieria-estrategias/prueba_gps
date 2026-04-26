@@ -13,7 +13,7 @@ function getLocation(controlId) {
 }
 
 
-// ===== IMPUESTOS FORMATEADO (FORZADO) =====
+// ===== IMPUESTOS BASE =====
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
@@ -35,17 +35,12 @@ setInterval(function() {
     ? valor * 0.015
     : valor * 0.03;
 
-  var formateado = resultado.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-
-  api.setControlValueById('121009493', formateado + '');
+  api.setControlValueById('121009493', resultado + '');
 
 }, 1000);
 
 
-// ===== DIFERENCIA Y SALDO =====
+// ===== DIFERENCIA + SALDO + DISTRIBUCIÓN =====
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
@@ -58,44 +53,17 @@ setInterval(function() {
   var avaluo = limpiar(api.getControlValueById('121060140'));
   var capacidad = limpiar(api.getControlValueById('121060145'));
 
-  var dineroReal = Math.min(avaluo, capacidad);
-
-  var diferencia = valorOperacion - dineroReal;
-
   if (!valorOperacion) return;
 
-  var diferenciaFmt = diferencia.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  var dineroReal = Math.min(avaluo, capacidad);
+  var diferencia = valorOperacion - dineroReal;
 
-  api.setControlValueById('121060146', diferenciaFmt + '');
+  api.setControlValueById('121060146', diferencia + '');
 
-  var saldoFavor = (diferencia < 0) ? Math.abs(diferencia) : 0;
+  var saldo = (diferencia < 0) ? Math.abs(diferencia) : 0;
+  api.setControlValueById('121063070', saldo + '');
 
-  var saldoFmt = saldoFavor.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-
-  api.setControlValueById('121063070', saldoFmt + '');
-
-}, 1000);
-
-
-// ===== TIPO SALDO =====
-setInterval(function() {
-
-  var api = loader.getDOMAbstractionLayer();
-
-  function limpiar(valor) {
-    return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
-  }
-
-  var saldo = limpiar(api.getControlValueById('121063070'));
   var tipo = api.getControlValueById('119758426');
-
-  if (!saldo) return;
 
   api.setControlValueById('121063072', '0');
   api.setControlValueById('121063095', '0');
@@ -124,21 +92,10 @@ setInterval(function() {
 
     var suma = emp + cli + cor + ase;
 
+    api.setControlValueById('121063103', suma + '');
+
     var impuesto = saldo * 0.35;
-
-    var impFmt = impuesto.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
-    api.setControlValueById('121063096', impFmt + '');
-
-    var totalFmt = suma.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
-    api.setControlValueById('121063103', totalFmt + '');
+    api.setControlValueById('121063096', impuesto + '');
   }
 
   if (tipo === 'Acumulado') {
@@ -146,22 +103,10 @@ setInterval(function() {
     api.setControlValueById('121063106', saldo + '');
 
     var impuesto = saldo * 0.35;
-
-    var impFmt = impuesto.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
-    api.setControlValueById('121063107', impFmt + '');
+    api.setControlValueById('121063107', impuesto + '');
 
     var total = saldo + impuesto;
-
-    var totalFmt = total.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
-    api.setControlValueById('121063109', totalFmt + '');
+    api.setControlValueById('121063109', total + '');
   }
 
   if (tipo === 'Reintegrado') {
@@ -169,22 +114,10 @@ setInterval(function() {
     api.setControlValueById('121063110', saldo + '');
 
     var impuesto = saldo * 0.35;
-
-    var impFmt = impuesto.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
-    api.setControlValueById('121063111', impFmt + '');
+    api.setControlValueById('121063111', impuesto + '');
 
     var total = saldo + impuesto;
-
-    var totalFmt = total.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
-    api.setControlValueById('121063112', totalFmt + '');
+    api.setControlValueById('121063112', total + '');
   }
 
 }, 1000);
