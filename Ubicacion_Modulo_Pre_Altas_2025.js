@@ -1,4 +1,3 @@
-
 // ===== GEOLOCALIZACION =====
 getLocation('119652394');
 
@@ -10,14 +9,14 @@ function getLocation(controlId) {
                 position.coords.latitude + "," + position.coords.longitude
             );
         });
-    } else {
-        console.error("Geolocation is not supported by this browser.");
     }
 }
 
 
-// ===== FORMATEO AL SALIR DEL CAMPO =====
-(function() {
+// ===== FORMATEO ESTABLE MISMO CAMPO =====
+var ultimo = '';
+
+setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
 
@@ -25,25 +24,23 @@ function getLocation(controlId) {
     return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
   }
 
-  function formatear() {
+  var actual = api.getControlValueById('121011482');
 
-    var valor = limpiar(api.getControlValueById('121011482'));
+  // evitar loop innecesario
+  if (!actual || actual === ultimo) return;
 
-    var formateado = valor.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+  // evitar formatear mientras escribe (si termina en punto o coma)
+  if (/[.,]$/.test(actual)) return;
 
-    api.setControlValueById('121011482', formateado + '');
-  }
+  var numero = limpiar(actual);
 
-  // Esperar a que el campo exista
-  setTimeout(function() {
-    var input = document.querySelector('[id="id_121011482"] input');
+  var formateado = numero.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 
-    if (input) {
-      input.addEventListener('blur', formatear);
-    }
-  }, 1000);
+  ultimo = formateado;
 
-})();
+  api.setControlValueById('121011482', formateado + '');
+
+}, 700);
