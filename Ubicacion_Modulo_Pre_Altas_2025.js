@@ -1,3 +1,4 @@
+// ===== GEOLOCALIZACION =====
 getLocation('119535478');
 
 function getLocation(controlId) {
@@ -11,6 +12,8 @@ function getLocation(controlId) {
     }
 }
 
+
+// ===== IMPUESTOS FORMATEADO (FORZADO) =====
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
@@ -26,7 +29,7 @@ setInterval(function() {
 
   var valor = lote + (mts * precioMt2) + costo;
 
-  if (!valor) return;
+  if (valor === 0) return;
 
   var resultado = (valor <= 641000)
     ? valor * 0.015
