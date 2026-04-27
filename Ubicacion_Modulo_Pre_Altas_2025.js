@@ -16,8 +16,8 @@ function getLocation(controlId) {
 }
 
 
-// ===== FORMATEO CAMPO 121011482 =====
-setInterval(function() {
+// ===== FORMATEO AL SALIR DEL CAMPO =====
+(function() {
 
   var api = loader.getDOMAbstractionLayer();
 
@@ -25,13 +25,25 @@ setInterval(function() {
     return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
   }
 
-  var valor = limpiar(api.getControlValueById('121011482'));
+  function formatear() {
 
-  var formateado = valor.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+    var valor = limpiar(api.getControlValueById('121011482'));
 
-  api.setControlValueById('121011482', formateado + '');
+    var formateado = valor.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
 
-}, 1000);
+    api.setControlValueById('121011482', formateado + '');
+  }
+
+  // Esperar a que el campo exista
+  setTimeout(function() {
+    var input = document.querySelector('[id="id_121011482"] input');
+
+    if (input) {
+      input.addEventListener('blur', formatear);
+    }
+  }, 1000);
+
+})();
