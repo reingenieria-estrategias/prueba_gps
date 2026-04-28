@@ -13,15 +13,12 @@ function getLocation(controlId) {
 }
 
 
-// ===== FORMATEO SIN INTERFERIR =====
+// ===== FORMATEO ESTABLE MISMO CAMPO =====
+var ultimo = '';
+
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
-
-  var input = document.querySelector('#id_121011482 input');
-
-  // 🔥 SI EL USUARIO ESTÁ ESCRIBIENDO → NO HACER NADA
-  if (input && document.activeElement === input) return;
 
   function limpiar(valor) {
     return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
@@ -29,7 +26,11 @@ setInterval(function() {
 
   var actual = api.getControlValueById('121011482');
 
-  if (!actual) return;
+  // evitar loop innecesario
+  if (!actual || actual === ultimo) return;
+
+  // evitar formatear mientras escribe (si termina en punto o coma)
+  if (/[.,]$/.test(actual)) return;
 
   var numero = limpiar(actual);
 
@@ -38,8 +39,8 @@ setInterval(function() {
     maximumFractionDigits: 2
   });
 
-  if (actual !== formateado) {
-    api.setControlValueById('121011482', formateado + '');
-  }
+  ultimo = formateado;
 
-}, 500);
+  api.setControlValueById('121011482', formateado + '');
+
+}, 1500);
