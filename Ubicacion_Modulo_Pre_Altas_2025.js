@@ -1,3 +1,4 @@
+
 // ===== GEOLOCALIZACION =====
 getLocation('119652394');
 
@@ -13,34 +14,30 @@ function getLocation(controlId) {
 }
 
 
-// ===== FORMATEO ESTABLE MISMO CAMPO =====
-var ultimo = '';
+// ===== FORMATEO AL SALIR DEL CAMPO =====
+setTimeout(function(){
 
-setInterval(function() {
+  var input = document.querySelector('[id="id_121011482"] input');
 
-  var api = loader.getDOMAbstractionLayer();
+  if (!input) return;
 
-  function limpiar(valor) {
-    return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
-  }
+  input.addEventListener('blur', function(){
 
-  var actual = api.getControlValueById('121011482');
+    var api = loader.getDOMAbstractionLayer();
 
-  // evitar loop innecesario
-  if (!actual || actual === ultimo) return;
+    function limpiar(valor) {
+      return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
+    }
 
-  // evitar formatear mientras escribe (si termina en punto o coma)
-  if (/[.,]$/.test(actual)) return;
+    var valor = limpiar(api.getControlValueById('121011482'));
 
-  var numero = limpiar(actual);
+    var formateado = valor.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
 
-  var formateado = numero.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    api.setControlValueById('121011482', formateado + '');
+
   });
 
-  ultimo = formateado;
-
-  api.setControlValueById('121011482', formateado + '');
-
-}, 700);
+}, 1500);
