@@ -26,16 +26,14 @@ setInterval(function() {
 
   var actual = api.getControlValueById('121011482');
 
-  // evitar loop innecesario
   if (!actual || actual === ultimo) return;
 
-  // evitar formatear mientras escribe (si termina en punto o coma)
   if (/[.,]$/.test(actual)) return;
 
   var numero = limpiar(actual);
 
   var formateado = numero.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2
   });
 
