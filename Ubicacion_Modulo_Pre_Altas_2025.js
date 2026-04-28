@@ -13,32 +13,33 @@ function getLocation(controlId) {
 }
 
 
-// ===== FORMATEO AL SALIR DEL CAMPO =====
-setInterval(function(){
+// ===== FORMATEO SIN INTERFERIR =====
+setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
 
   var input = document.querySelector('#id_121011482 input');
 
-  if (!input || input.dataset.ok) return;
+  // 🔥 SI EL USUARIO ESTÁ ESCRIBIENDO → NO HACER NADA
+  if (input && document.activeElement === input) return;
 
-  input.dataset.ok = true;
+  function limpiar(valor) {
+    return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
+  }
 
-  input.addEventListener('blur', function(){
+  var actual = api.getControlValueById('121011482');
 
-    function limpiar(valor) {
-      return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
-    }
+  if (!actual) return;
 
-    var valor = limpiar(api.getControlValueById('121011482'));
+  var numero = limpiar(actual);
 
-    var formateado = valor.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
-    api.setControlValueById('121011482', formateado + '');
-
+  var formateado = numero.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
+
+  if (actual !== formateado) {
+    api.setControlValueById('121011482', formateado + '');
+  }
 
 }, 500);
