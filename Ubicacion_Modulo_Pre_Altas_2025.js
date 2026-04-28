@@ -1,4 +1,3 @@
-
 // ===== GEOLOCALIZACION =====
 getLocation('119652394');
 
@@ -15,15 +14,17 @@ function getLocation(controlId) {
 
 
 // ===== FORMATEO AL SALIR DEL CAMPO =====
-setTimeout(function(){
+setInterval(function(){
 
-  var input = document.querySelector('[id="id_121011482"] input');
+  var api = loader.getDOMAbstractionLayer();
 
-  if (!input) return;
+  var input = document.querySelector('#id_121011482 input');
+
+  if (!input || input.dataset.ok) return;
+
+  input.dataset.ok = true;
 
   input.addEventListener('blur', function(){
-
-    var api = loader.getDOMAbstractionLayer();
 
     function limpiar(valor) {
       return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
@@ -40,4 +41,4 @@ setTimeout(function(){
 
   });
 
-}, 1500);
+}, 500);
