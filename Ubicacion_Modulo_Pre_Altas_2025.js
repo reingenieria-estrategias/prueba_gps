@@ -13,8 +13,8 @@ function getLocation(controlId) {
 }
 
 
-// ===== FORMATEO ESTABLE MISMO CAMPO =====
-var ultimo = '';
+// ===== FORMATEO CAMPOS BASE =====
+var ultimo = {};
 
 setInterval(function() {
 
@@ -24,21 +24,33 @@ setInterval(function() {
     return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
   }
 
-  var actual = api.getControlValueById('121011482');
+  var campos = [
+    '121011482',
+    '121011483',
+    '121011484',
+    '121011485',
+    '121011560'
+  ];
 
-  if (!actual || actual === ultimo) return;
+  campos.forEach(function(id){
 
-  if (/[.,]$/.test(actual)) return;
+    var actual = api.getControlValueById(id);
 
-  var numero = limpiar(actual);
+    if (!actual || ultimo[id] === actual) return;
 
-  var formateado = numero.toLocaleString('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
+    if (/[.,]$/.test(actual)) return;
+
+    var numero = limpiar(actual);
+
+    var formateado = numero.toLocaleString('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    });
+
+    ultimo[id] = formateado;
+
+    api.setControlValueById(id, formateado + '');
+
   });
-
-  ultimo = formateado;
-
-  api.setControlValueById('121011482', formateado + '');
 
 }, 1500);
