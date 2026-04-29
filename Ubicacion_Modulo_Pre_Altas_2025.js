@@ -12,7 +12,8 @@ function getLocation(controlId) {
     }
 }
 
-// ===== FORMATEO MISMA LOGICA PARA TODOS =====
+
+// ===== FORMATEO AL SALIR DEL CAMPO =====
 var idsFormato = [
 '121011482','121011483','121011484','121011485','121011560',
 '121011487','121059979',
@@ -29,35 +30,36 @@ var idsFormato = [
 '121063110','121063111','121063112'
 ];
 
-var ultimos = {};
+function limpiar(valor) {
+  return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
+}
 
-setInterval(function() {
+function formatear(numero) {
+  return numero.toLocaleString('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+}
+
+// 🔥 Detectar salida del campo
+document.addEventListener('focusout', function(e) {
 
   var api = loader.getDOMAbstractionLayer();
 
-  function limpiar(valor) {
-    return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
-  }
+  var id = e.target.id;
 
-  idsFormato.forEach(function(id) {
+  if (!idsFormato.includes(id)) return;
 
-    var actual = api.getControlValueById(id);
+  var actual = api.getControlValueById(id);
 
-    if (!actual || actual === ultimos[id]) return;
+  if (!actual) return;
 
-    if (/[.,]$/.test(actual)) return;
+  if (/[.,]$/.test(actual)) return;
 
-    var numero = limpiar(actual);
+  var numero = limpiar(actual);
 
-    var formateado = numero.toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    });
+  var formateado = formatear(numero);
 
-    ultimos[id] = formateado;
+  api.setControlValueById(id, formateado);
 
-    api.setControlValueById(id, formateado + '');
-
-  });
-
-}, 5000);
+});
