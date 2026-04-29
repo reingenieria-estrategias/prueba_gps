@@ -13,7 +13,7 @@ function getLocation(controlId) {
 }
 
 
-// ===== FORMATEO POR INACTIVIDAD =====
+// ===== FORMATEO POR ESTABILIDAD =====
 var idsFormato = [
 '121011482','121011483','121011484','121011485','121011560',
 '121011487','121059979',
@@ -30,9 +30,9 @@ var idsFormato = [
 '121063110','121063111','121063112'
 ];
 
-// guarda el último cambio del usuario
-var ultimaEdicion = {};
-var ultimos = {};
+var ultimoValor = {};
+var contadorEstable = {};
+var ultimosFormateados = {};
 
 function limpiar(valor) {
   return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
@@ -45,36 +45,36 @@ function formatear(numero) {
   });
 }
 
-// 🔥 Detectar cuando el usuario escribe
-document.addEventListener('input', function(e) {
-  var id = e.target.id;
-  if (idsFormato.includes(id)) {
-    ultimaEdicion[id] = Date.now();
-  }
-});
-
-// 🔁 Revisar cada cierto tiempo
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
-  var ahora = Date.now();
 
   idsFormato.forEach(function(id) {
 
     var actual = api.getControlValueById(id);
 
-    if (!actual || actual === ultimos[id]) return;
-
+    if (!actual) return;
     if (/[.,]$/.test(actual)) return;
 
-    // ⛔ SI ESCRIBIERON RECIENTE, NO TOCAR
-    var ultima = ultimaEdicion[id] || 0;
-    if (ahora - ultima < 3000) return; // 3 segundos sin escribir
+    // detectar si cambió el valor
+    if (actual !== ultimoValor[id]) {
+      ultimoValor[id] = actual;
+      contadorEstable[id] = 0;
+      return; // está escribiendo → no tocar
+    }
+
+    // si no cambió, incrementar estabilidad
+    contadorEstable[id] = (contadorEstable[id] || 0) + 1;
+
+    // esperar estabilidad (3 ciclos ≈ 3 segundos)
+    if (contadorEstable[id] < 3) return;
 
     var numero = limpiar(actual);
     var formateado = formatear(numero);
 
-    ultimos[id] = formateado;
+    if (formateado === ultimosFormateados[id]) return;
+
+    ultimosFormateados[id] = formateado;
 
     api.setControlValueById(id, formateado);
 
