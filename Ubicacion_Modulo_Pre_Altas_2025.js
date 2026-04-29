@@ -60,4 +60,4 @@ setInterval(function() {
 
   });
 
-}, 2500);
+}, 5000);
