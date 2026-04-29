@@ -2,31 +2,20 @@
 getLocation('119652394');
 
 function getLocation(controlId) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position){
-      loader.getDOMAbstractionLayer().setControlValueById(
-        controlId,
-        position.coords.latitude + "," + position.coords.longitude
-      );
-    });
-  }
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position){
+            loader.getDOMAbstractionLayer().setControlValueById(
+                controlId,
+                position.coords.latitude + "," + position.coords.longitude
+            );
+        });
+    }
 }
 
 
-// ===== HELPERS =====
-function limpiar(valor) {
-  return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
-}
+// ===== FORMATEO MULTICAMPO =====
+var ultimos = {};
 
-function formatear(numero) {
-  return numero.toLocaleString('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  });
-}
-
-
-// ===== CAMPOS DE DINERO =====
 var campos = [
   '121011482','121011483','121011484','121011485','121011560',
   '121011487','121059979',
@@ -43,24 +32,29 @@ var campos = [
   '121063110','121063111','121063112'
 ];
 
-var ultimos = {};
-
-
-// ===== FORMATEO AUTOMATICO =====
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
+
+  function limpiar(valor) {
+    return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
+  }
 
   campos.forEach(function(id) {
 
     var actual = api.getControlValueById(id);
 
-    if (!actual || actual === ultimos[id]) return;
+    // 🔥 CAMBIO CLAVE → ahora permite 0
+    if (actual === null || actual === undefined || actual === '' || actual === ultimos[id]) return;
 
     if (/[.,]$/.test(actual)) return;
 
     var numero = limpiar(actual);
-    var formateado = formatear(numero);
+
+    var formateado = numero.toLocaleString('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    });
 
     ultimos[id] = formateado;
 
