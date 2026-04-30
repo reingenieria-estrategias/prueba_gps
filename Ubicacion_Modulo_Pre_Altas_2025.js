@@ -18,10 +18,7 @@ setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
 
-  // 👉 Ahora usamos el campo fórmula directamente
   var valor = parseFloat(api.getControlValueById('121107880')) || 0;
-
-  if (!valor) return;
 
   var resultado = (valor <= 641000)
     ? valor * 0.015
