@@ -12,72 +12,100 @@ function getLocation(controlId) {
     }
 }
 
+// ===== API =====
+var api = loader.getDOMAbstractionLayer();
 
-// ===== FORMATEO POR ESTABILIDAD =====
-var idsFormato = [
-'121011482','121011483','121011484','121011485','121011560',
-'121011487','121059979',
-'121059980','121060114','121060115','121009493','121060116','121060117',
-'121060118','121060120','121060121','121060138','121060139',
-'121060140','121060141','121060144','121060145',
-'121060146','121060148','121060149','121060150','121060152','121060153','121062097',
-'121062261','121062262','121062263','121062264','121062273','121062277',
-'121062294','121062295','121062304','121062307','121062315','121062330',
-'121063070','121063075',
-'121063072','121063073','121063074',
-'121063095','121063096','121063097','121063099','121063100','121063102','121063103',
-'121063106','121063107','121063109',
-'121063110','121063111','121063112'
-];
-
-var ultimoValor = {};
-var contadorEstable = {};
-var ultimosFormateados = {};
-
-function limpiar(valor) {
-  return parseFloat((valor || "0").toString().replace(/,/g, '')) || 0;
+// ===== HELPERS =====
+function get(id){
+  return parseFloat(api.getControlValueById(id)) || 0;
 }
 
-function formatear(numero) {
-  return numero.toLocaleString('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  });
+function set(id, val){
+  api.setControlValueById(id, val);
 }
 
-setInterval(function() {
+// ===== BASE =====
+var valorOperacion = get(121103983);
+var capacidad = get(121104024);
+var separacion = get(121104033);
 
-  var api = loader.getDOMAbstractionLayer();
+// ===== DIFERENCIA =====
+var diferencia = valorOperacion - capacidad;
+set(121104026, diferencia);
 
-  idsFormato.forEach(function(id) {
+// ===== DIFERENCIA AJUSTADA =====
+var diferenciaAjustada = diferencia - separacion;
 
-    var actual = api.getControlValueById(id);
+// ===== ENGANCHES =====
+var tope = valorOperacion * 0.03;
 
-    if (!actual) return;
-    if (/[.,]$/.test(actual)) return;
+var engancheFinanciar;
 
-    // detectar si cambió el valor
-    if (actual !== ultimoValor[id]) {
-      ultimoValor[id] = actual;
-      contadorEstable[id] = 0;
-      return; // está escribiendo → no tocar
-    }
+if (diferenciaAjustada <= tope) {
+  engancheFinanciar = diferenciaAjustada * 0.5;
+} else {
+  engancheFinanciar = tope;
+}
 
-    // si no cambió, incrementar estabilidad
-    contadorEstable[id] = (contadorEstable[id] || 0) + 1;
+set(121104042, engancheFinanciar);
 
-    // esperar estabilidad (3 ciclos ≈ 3 segundos)
-    if (contadorEstable[id] < 3) return;
+// ===== NO FINANCIADO =====
+var engancheNo = diferenciaAjustada - engancheFinanciar;
+set(121104038, engancheNo);
 
-    var numero = limpiar(actual);
-    var formateado = formatear(numero);
+// ===== ANTICIPO =====
+set(121104041, separacion + engancheNo);
 
-    if (formateado === ultimosFormateados[id]) return;
+// ===== PAGO A FINANCIAR =====
+set(121104046, engancheFinanciar);
 
-    ultimosFormateados[id] = formateado;
+// ===== SALDO A FAVOR =====
+var saldoFavor = 0;
 
-    api.setControlValueById(id, formateado);
+if (capacidad > valorOperacion) {
+  saldoFavor = capacidad - valorOperacion;
+}
 
-  });
+set(121104063, saldoFavor);
+set(121104079, saldoFavor);
 
-}, 1000);
+// ===== TIPO =====
+var tipo = api.getControlValueById(119758426);
+
+// ===== EQUIPAMIENTO =====
+var eq = (tipo === "Equipamiento") ? saldoFavor : 0;
+set(121104080, eq);
+
+var eqImp = eq * 0.35;
+set(121104081, (tipo === "Equipamiento") ? eqImp : 0);
+
+set(121104084, (tipo === "Equipamiento") ? eq + eqImp : 0);
+
+// ===== DIVIDIDO =====
+var div = (tipo === "Dividido") ? saldoFavor : 0;
+set(121104086, div);
+
+var divImp = div * 0.35;
+set(121104089, (tipo === "Dividido") ? divImp : 0);
+
+// (Empresa, Cliente, Coordinador, Asesor = captura manual)
+
+set(121104096, (tipo === "Dividido") ? div + divImp : 0);
+
+// ===== ACUMULADO =====
+var acu = (tipo === "Acumulado") ? saldoFavor : 0;
+set(121104097, acu);
+
+var acuImp = acu * 0.35;
+set(121104098, (tipo === "Acumulado") ? acuImp : 0);
+
+set(121104100, (tipo === "Acumulado") ? acu + acuImp : 0);
+
+// ===== REINTEGRADO =====
+var rei = (tipo === "Reintegrado") ? saldoFavor : 0;
+set(121104102, rei);
+
+var reiImp = rei * 0.35;
+set(121104103, (tipo === "Reintegrado") ? reiImp : 0);
+
+set(121104135, (tipo === "Reintegrado") ? rei + reiImp : 0);
