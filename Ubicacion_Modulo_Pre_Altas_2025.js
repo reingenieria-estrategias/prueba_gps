@@ -12,16 +12,20 @@ function getLocation(controlId) {
     }
 }
 
-// ===== API =====
-var api = loader.getDOMAbstractionLayer();
-
-// ===== HELPERS =====
+// ===== HELPERS (CLAVE: api dentro) =====
 function get(id){
+  var api = loader.getDOMAbstractionLayer();
   return parseFloat(api.getControlValueById(id)) || 0;
 }
 
 function set(id, val){
+  var api = loader.getDOMAbstractionLayer();
   api.setControlValueById(id, val);
+}
+
+function getTipo(){
+  var api = loader.getDOMAbstractionLayer();
+  return api.getControlValueById(119758426);
 }
 
 // ===== BASE =====
@@ -38,8 +42,7 @@ var diferenciaAjustada = diferencia - separacion;
 
 // ===== ENGANCHES =====
 var tope = valorOperacion * 0.03;
-
-var engancheFinanciar;
+var engancheFinanciar = 0;
 
 if (diferenciaAjustada <= tope) {
   engancheFinanciar = diferenciaAjustada * 0.5;
@@ -70,7 +73,7 @@ set(121104063, saldoFavor);
 set(121104079, saldoFavor);
 
 // ===== TIPO =====
-var tipo = api.getControlValueById(119758426);
+var tipo = getTipo();
 
 // ===== EQUIPAMIENTO =====
 var eq = (tipo === "Equipamiento") ? saldoFavor : 0;
@@ -88,7 +91,7 @@ set(121104086, div);
 var divImp = div * 0.35;
 set(121104089, (tipo === "Dividido") ? divImp : 0);
 
-// (Empresa, Cliente, Coordinador, Asesor = captura manual)
+// NO TOCA Empresa, Cliente, Coordinador, Asesor (captura manual)
 
 set(121104096, (tipo === "Dividido") ? div + divImp : 0);
 
