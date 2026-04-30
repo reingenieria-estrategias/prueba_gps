@@ -32,15 +32,25 @@ setInterval(function() {
   // ===== DIFERENCIA =====
   var avaluo = parseFloat(api.getControlValueById('121104013')) || 0;
   var capacidad = parseFloat(api.getControlValueById('121110681')) || 0;
-  var operacion = valor;
 
-  // tomar el menor entre avalúo y capacidad
   var base = Math.min(avaluo, capacidad);
+  var diferencia = valor - base;
 
-  // calcular diferencia
-  var diferencia = operacion - base;
+  // 👉 Tipo de diferencia
+  var tipo = '';
 
-  // guardar resultado
-  api.setControlValueById('121104026', diferencia);
+  if (diferencia > 0) {
+    tipo = 'EN CONTRA';
+  } else if (diferencia < 0) {
+    tipo = 'A FAVOR';
+  } else {
+    tipo = 'SIN DIFERENCIA';
+  }
+
+  // 👉 Guardar valor absoluto (sin signo)
+  api.setControlValueById('121104026', Math.abs(diferencia));
+
+  // 👉 Guardar tipo
+  api.setControlValueById('121114371', tipo);
 
 }, 1000);
