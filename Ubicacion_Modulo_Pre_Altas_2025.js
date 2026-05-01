@@ -13,7 +13,7 @@ function getLocation(controlId) {
 }
 
 
-// ===== CALCULO DE IMPUESTOS + DIFERENCIA =====
+// ===== CALCULO GENERAL =====
 setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
@@ -86,5 +86,41 @@ setInterval(function() {
     api.setControlValueById('121104038', 0);
     api.setControlValueById('121104041', 0);
   }
+
+
+  // ===============================
+  // 🔥 VALIDACION DE PAGOS
+  // ===============================
+
+  var preliminar = parseFloat(api.getControlValueById('121115230')) || 0;
+
+  var sumaPagos = (
+    (parseFloat(api.getControlValueById('121104047')) || 0) +
+    (parseFloat(api.getControlValueById('121104048')) || 0) +
+    (parseFloat(api.getControlValueById('121104049')) || 0) +
+    (parseFloat(api.getControlValueById('121104051')) || 0) +
+    (parseFloat(api.getControlValueById('121104053')) || 0) +
+    (parseFloat(api.getControlValueById('121104054')) || 0) +
+    (parseFloat(api.getControlValueById('121104055')) || 0) +
+    (parseFloat(api.getControlValueById('121104056')) || 0) +
+    (parseFloat(api.getControlValueById('121104058')) || 0) +
+    (parseFloat(api.getControlValueById('121104059')) || 0) +
+    (parseFloat(api.getControlValueById('121104060')) || 0) +
+    (parseFloat(api.getControlValueById('121104061')) || 0)
+  );
+
+  var pendiente = preliminar - sumaPagos;
+
+  var mensaje = "";
+
+  if (pendiente > 0) {
+    mensaje = "Faltan $" + pendiente + " por asignar";
+  } else if (pendiente < 0) {
+    mensaje = "Hay $" + Math.abs(pendiente) + " de más en los pagos";
+  } else {
+    mensaje = "Cantidad completa registrada";
+  }
+
+  api.setControlValueById('121118452', mensaje);
 
 }, 1000);
