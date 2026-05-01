@@ -121,8 +121,11 @@ setInterval(function() {
     mensaje = "Cantidad completa registrada";
   }
 
-  // 🔥 FORZAR ACTUALIZACIÓN DEL CAMPO SHORT TEXT
-  api.setControlPropertyById('121118452', 'value', "");
-  api.setControlPropertyById('121118452', 'value', mensaje);
+  // 🔥 ESCRITURA SEGURA (SOLO SI CAMBIA)
+  var actual = api.getControlValueById('121118452') || "";
+
+  if (actual !== mensaje) {
+    api.setControlValueById('121118452', mensaje);
+  }
 
 }, 1000);
