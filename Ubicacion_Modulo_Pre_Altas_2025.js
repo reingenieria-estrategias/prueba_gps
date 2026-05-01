@@ -109,19 +109,20 @@ setInterval(function() {
     (parseFloat(api.getControlValueById('121104061')) || 0)
   );
 
-  var pendiente = preliminar - sumaPagos;
+  // 🔥 FIX DECIMALES
+  var pendiente = Math.round((preliminar - sumaPagos) * 100) / 100;
 
   var mensaje = "";
 
   if (pendiente > 0) {
-    mensaje = "Faltan $" + pendiente + " por asignar";
+    mensaje = "Faltan $" + pendiente.toFixed(2) + " por asignar";
   } else if (pendiente < 0) {
-    mensaje = "Hay $" + Math.abs(pendiente) + " de más en los pagos";
+    mensaje = "Hay $" + Math.abs(pendiente).toFixed(2) + " de más en los pagos";
   } else {
     mensaje = "Cantidad completa registrada";
   }
 
-  // 🔥 CLAVE: retraso para que sí se pinte
+  // 🔥 FIX TIMING (EL QUE HIZO QUE FUNCIONARA)
   setTimeout(function() {
     api.setControlValueById('121118452', mensaje);
   }, 150);
