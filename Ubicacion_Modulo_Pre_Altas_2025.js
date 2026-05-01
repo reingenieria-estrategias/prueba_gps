@@ -109,20 +109,20 @@ setInterval(function() {
     (parseFloat(api.getControlValueById('121104061')) || 0)
   );
 
-  // 🔥 FIX DECIMALES
-  var pendiente = Math.round((preliminar - sumaPagos) * 100) / 100;
-
   var mensaje = "";
 
-  if (pendiente > 0) {
-    mensaje = "Faltan $" + pendiente.toFixed(2) + " por asignar";
-  } else if (pendiente < 0) {
-    mensaje = "Hay $" + Math.abs(pendiente).toFixed(2) + " de más en los pagos";
+  // 🔥 REDONDEO DIRECTO EN MENSAJE (SOLUCION DEFINITIVA)
+  var diferencia = Math.round((preliminar - sumaPagos) * 100) / 100;
+
+  if (diferencia > 0) {
+    mensaje = "Faltan $" + diferencia.toFixed(2) + " por asignar";
+  } else if (diferencia < 0) {
+    mensaje = "Hay $" + Math.abs(diferencia).toFixed(2) + " de más en los pagos";
   } else {
     mensaje = "Cantidad completa registrada";
   }
 
-  // 🔥 FIX TIMING (EL QUE HIZO QUE FUNCIONARA)
+  // 🔥 FIX TIMING
   setTimeout(function() {
     api.setControlValueById('121118452', mensaje);
   }, 150);
