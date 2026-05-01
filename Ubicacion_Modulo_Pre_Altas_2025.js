@@ -53,6 +53,17 @@ setInterval(function() {
 
 
   // ===============================
+  // 🔥 SALDO A FAVOR (NUEVO)
+  // ===============================
+
+  if (tipo === 'A FAVOR') {
+    api.setControlValueById('121104063', diferenciaAbs.toFixed(2));
+  } else {
+    api.setControlValueById('121104063', 0);
+  }
+
+
+  // ===============================
   // 🔥 BLOQUE FINANCIERO
   // ===============================
 
@@ -111,7 +122,6 @@ setInterval(function() {
 
   var diferencia = preliminar - sumaPagos;
 
-  // 🔥 AQUI ESTÁ EL FIX (ÚNICO CAMBIO REAL)
   var diff = Number(diferencia.toFixed(2));
 
   var mensaje = "";
@@ -124,7 +134,6 @@ setInterval(function() {
     mensaje = "Cantidad completa registrada";
   }
 
-  // 🔥 TIMING (YA FUNCIONABA)
   setTimeout(function() {
     api.setControlValueById('121118452', mensaje);
   }, 150);
