@@ -53,9 +53,8 @@ setInterval(function() {
 
 
   // ===============================
-  // 🔥 SALDO A FAVOR (NUEVO)
+  // 🔥 SALDO A FAVOR
   // ===============================
-
   if (tipo === 'A FAVOR') {
     api.setControlValueById('121104063', diferenciaAbs.toFixed(2));
   } else {
@@ -64,9 +63,34 @@ setInterval(function() {
 
 
   // ===============================
+  // 🔥 DISTRIBUCION SALDO A FAVOR
+  // ===============================
+  var tipoSaldo = api.getControlValueById('119758426') || "";
+  var saldo = parseFloat(api.getControlValueById('121104063')) || 0;
+
+  // limpiar todos
+  api.setControlValueById('121104079', 0);
+  api.setControlValueById('121104080', 0);
+  api.setControlValueById('121104086', 0);
+  api.setControlValueById('121104097', 0);
+  api.setControlValueById('121104102', 0);
+
+  if (tipoSaldo === 'Adjudicado') {
+    api.setControlValueById('121104079', saldo);
+  } else if (tipoSaldo === 'Equipamiento') {
+    api.setControlValueById('121104080', saldo);
+  } else if (tipoSaldo === 'Dividido') {
+    api.setControlValueById('121104086', saldo);
+  } else if (tipoSaldo === 'Acumulado') {
+    api.setControlValueById('121104097', saldo);
+  } else if (tipoSaldo === 'Reintegrado') {
+    api.setControlValueById('121104102', saldo);
+  }
+
+
+  // ===============================
   // 🔥 BLOQUE FINANCIERO
   // ===============================
-
   var separacion = parseFloat(api.getControlValueById('121104033')) || 0;
 
   if (tipo === 'EN CONTRA') {
@@ -102,7 +126,6 @@ setInterval(function() {
   // ===============================
   // 🔥 VALIDACION DE PAGOS
   // ===============================
-
   var preliminar = parseFloat(api.getControlValueById('121115230')) || 0;
 
   var sumaPagos = (
