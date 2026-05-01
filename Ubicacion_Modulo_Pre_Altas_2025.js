@@ -18,7 +18,7 @@ setInterval(function() {
 
   var api = loader.getDOMAbstractionLayer();
 
-  // ===== VALOR TOTAL (campo fórmula) =====
+  // ===== VALOR TOTAL =====
   var valor = parseFloat(api.getControlValueById('121107880')) || 0;
 
   // ===== IMPUESTO =====
@@ -36,7 +36,6 @@ setInterval(function() {
   var base = Math.min(avaluo, capacidad);
   var diferencia = valor - base;
 
-  // 👉 Tipo de diferencia
   var tipo = '';
 
   if (diferencia > 0) {
@@ -47,10 +46,45 @@ setInterval(function() {
     tipo = 'SIN DIFERENCIA';
   }
 
-  // 👉 Guardar valor absoluto (sin signo)
-  api.setControlValueById('121104026', Math.abs(diferencia));
+  var diferenciaAbs = Math.abs(diferencia);
 
-  // 👉 Guardar tipo
+  api.setControlValueById('121104026', diferenciaAbs);
   api.setControlValueById('121114371', tipo);
+
+
+  // ===============================
+  // 🔥 BLOQUE FINANCIERO
+  // ===============================
+
+  var separacion = parseFloat(api.getControlValueById('121104033')) || 0;
+
+  if (tipo === 'EN CONTRA') {
+
+    var diferenciaAjustada = diferenciaAbs - separacion;
+
+    if (diferenciaAjustada < 0) diferenciaAjustada = 0;
+
+    var tope = valor * 0.03;
+
+    var engancheFinanciar = 0;
+
+    if (diferenciaAjustada <= tope) {
+      engancheFinanciar = diferenciaAjustada * 0.5;
+    } else {
+      engancheFinanciar = tope;
+    }
+
+    var engancheNo = diferenciaAjustada - engancheFinanciar;
+
+    api.setControlValueById('121104042', engancheFinanciar);
+    api.setControlValueById('121104038', engancheNo);
+    api.setControlValueById('121104041', separacion + engancheNo);
+
+  } else {
+
+    api.setControlValueById('121104042', 0);
+    api.setControlValueById('121104038', 0);
+    api.setControlValueById('121104041', 0);
+  }
 
 }, 1000);
