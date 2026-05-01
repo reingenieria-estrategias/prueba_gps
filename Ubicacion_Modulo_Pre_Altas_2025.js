@@ -65,25 +65,25 @@ setInterval(function() {
   // ===============================
   // 🔥 DISTRIBUCION SALDO A FAVOR
   // ===============================
-  var tipoSaldo = api.getControlValueById('119758426') || "";
+  var tipoSaldo = (api.getControlValueById('119758426') || "").toLowerCase().trim();
   var saldo = parseFloat(api.getControlValueById('121104063')) || 0;
 
-  // limpiar todos
+  // limpiar destinos
   api.setControlValueById('121104079', 0);
   api.setControlValueById('121104080', 0);
   api.setControlValueById('121104086', 0);
   api.setControlValueById('121104097', 0);
   api.setControlValueById('121104102', 0);
 
-  if (tipoSaldo === 'Adjudicado') {
+  if (tipoSaldo.includes('adjudicado')) {
     api.setControlValueById('121104079', saldo);
-  } else if (tipoSaldo === 'Equipamiento') {
+  } else if (tipoSaldo.includes('equipamiento')) {
     api.setControlValueById('121104080', saldo);
-  } else if (tipoSaldo === 'Dividido') {
+  } else if (tipoSaldo.includes('dividido')) {
     api.setControlValueById('121104086', saldo);
-  } else if (tipoSaldo === 'Acumulado') {
+  } else if (tipoSaldo.includes('acumulado')) {
     api.setControlValueById('121104097', saldo);
-  } else if (tipoSaldo === 'Reintegrado') {
+  } else if (tipoSaldo.includes('reintegrado')) {
     api.setControlValueById('121104102', saldo);
   }
 
@@ -144,7 +144,6 @@ setInterval(function() {
   );
 
   var diferencia = preliminar - sumaPagos;
-
   var diff = Number(diferencia.toFixed(2));
 
   var mensaje = "";
