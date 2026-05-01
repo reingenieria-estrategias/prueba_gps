@@ -121,11 +121,9 @@ setInterval(function() {
     mensaje = "Cantidad completa registrada";
   }
 
-  // 🔥 ESCRITURA SEGURA (SOLO SI CAMBIA)
-  var actual = api.getControlValueById('121118452') || "";
-
-  if (actual !== mensaje) {
+  // 🔥 CLAVE: retraso para que sí se pinte
+  setTimeout(function() {
     api.setControlValueById('121118452', mensaje);
-  }
+  }, 150);
 
 }, 1000);
