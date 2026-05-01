@@ -121,6 +121,8 @@ setInterval(function() {
     mensaje = "Cantidad completa registrada";
   }
 
-  api.setControlValueById('121118452', mensaje);
+  // 🔥 FORZAR ACTUALIZACIÓN DEL CAMPO SHORT TEXT
+  api.setControlPropertyById('121118452', 'value', "");
+  api.setControlPropertyById('121118452', 'value', mensaje);
 
 }, 1000);
