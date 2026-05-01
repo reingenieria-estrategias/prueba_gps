@@ -34,19 +34,19 @@ setInterval(function() {
   var capacidad = parseFloat(api.getControlValueById('121110681')) || 0;
 
   var base = Math.min(avaluo, capacidad);
-  var diferencia = valor - base;
+  var diferenciaCalc = valor - base;
 
   var tipo = '';
 
-  if (diferencia > 0) {
+  if (diferenciaCalc > 0) {
     tipo = 'EN CONTRA';
-  } else if (diferencia < 0) {
+  } else if (diferenciaCalc < 0) {
     tipo = 'A FAVOR';
   } else {
     tipo = 'SIN DIFERENCIA';
   }
 
-  var diferenciaAbs = Math.abs(diferencia);
+  var diferenciaAbs = Math.abs(diferenciaCalc);
 
   api.setControlValueById('121104026', diferenciaAbs);
   api.setControlValueById('121114371', tipo);
@@ -109,20 +109,22 @@ setInterval(function() {
     (parseFloat(api.getControlValueById('121104061')) || 0)
   );
 
+  var diferencia = preliminar - sumaPagos;
+
+  // 🔥 AQUI ESTÁ EL FIX (ÚNICO CAMBIO REAL)
+  var diff = Number(diferencia.toFixed(2));
+
   var mensaje = "";
 
-  // 🔥 REDONDEO DIRECTO EN MENSAJE (SOLUCION DEFINITIVA)
-  var diferencia = Math.round((preliminar - sumaPagos) * 100) / 100;
-
-  if (diferencia > 0) {
-    mensaje = "Faltan $" + diferencia.toFixed(2) + " por asignar";
-  } else if (diferencia < 0) {
-    mensaje = "Hay $" + Math.abs(diferencia).toFixed(2) + " de más en los pagos";
+  if (diff > 0) {
+    mensaje = "Faltan $" + diff.toFixed(2) + " por asignar";
+  } else if (diff < 0) {
+    mensaje = "Hay $" + Math.abs(diff).toFixed(2) + " de más en los pagos";
   } else {
     mensaje = "Cantidad completa registrada";
   }
 
-  // 🔥 FIX TIMING
+  // 🔥 TIMING (YA FUNCIONABA)
   setTimeout(function() {
     api.setControlValueById('121118452', mensaje);
   }, 150);
